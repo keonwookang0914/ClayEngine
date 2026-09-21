@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Engine 모듈 : Engine.dll - 엔진 본체 -->
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{ACC0427C-BA91-4490-B362-C9E816245C38}</ProjectGuid>
+    <RootNamespace>Engine</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <!-- DynamicLibrary : 정적 라이브러리(.lib)가 아니라 동적 라이브러리(.dll)로 빌드한다. -->
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <!-- NotSet : UNICODE 를 정의하지 않는다. 진입점이 WinMain 그대로 유지된다. -->
+    <CharacterSet>NotSet</CharacterSet>
+    <UseDebugLibraries Condition="'$(Configuration)' == 'Debug'">true</UseDebugLibraries>
+    <UseDebugLibraries Condition="'$(Configuration)' == 'Release'">false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(MSBuildThisFileDirectory)..\..\Build\ClayEngine.Common.props" />
+  </ImportGroup>
+  <PropertyGroup>
+    <TargetName>Engine</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- Public  - Editor·Game 이 include 할 수 있는 헤더. DLL 바깥으로 공개하는 약속이다.
+           Private - Engine 자신만 보는 구현.
+           Public 폴더를 탐색 경로 뿌리로 잡았으므로 include 는 Public 아래 경로 그대로 적는다.
+             Public/Engine/Math/MathUtil.h  ->  #include "Engine/Math/MathUtil.h" -->
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)Public;$(MSBuildThisFileDirectory)Private;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- ENGINE_EXPORTS 는 Engine 을 빌드하는 동안에만 정의된다.
+           같은 헤더가 Engine 쪽에서는 dllexport, Editor·Game 쪽에서는 dllimport 로 펼쳐지는 장치다.
+           Editor·Game 프로젝트에는 절대 넣으면 안 된다. -->
+      <PreprocessorDefinitions>ENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <!-- DirectX 12 라이브러리. Engine.dll 안에서만 쓰이므로 Editor·Game 은 링크할 필요가 없다. -->
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- import 라이브러리 위치. Editor·Game 은 프로젝트 참조를 통해 이 경로를 자동으로 물려받는다. -->
+      <ImportLibrary>$(ClayLibDir)$(TargetName).lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Private\Core\EngineModule.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Public\Engine\Core\EngineAPI.h" />
+    <ClInclude Include="Public\Engine\Core\EngineModule.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
