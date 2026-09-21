@@ -9,8 +9,15 @@ CLAUDE.md
 .vs/
 
 ## Compile
+# 빌드 부산물
 Binaries/
 Intermediate/
+
+## Runtime
+# 로그, 설정 저장본, 크래시 덤프
+Saved/
+# 원본 에셋에서 파생된 캐시
+DerivedDataCache/
 
 ### C++ ###
 # Prerequisites
