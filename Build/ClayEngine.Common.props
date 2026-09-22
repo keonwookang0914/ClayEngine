@@ -1,37 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!--
-    ClayEngine 공통 빌드 설정
+  <!-- Engine / Editor / Game 공통 빌드 설정.
+       ConfigurationType, PlatformToolset, CharacterSet 은 Microsoft.Cpp.props 보다 먼저 정해져야 하므로 각 .vcxproj 에 둔다. -->
 
-    Engine / Editor / Game 세 프로젝트가 모두 이 파일을 가져다 쓴다.
-    컴파일 옵션이나 출력 경로를 바꿀 일이 생기면 .vcxproj 세 개가 아니라 여기 한 곳만 고친다.
-
-    주의 - ConfigurationType, PlatformToolset, CharacterSet 은 여기 둘 수 없다.
-           Microsoft.Cpp.props 가 읽히기 전에 정해져야 하는 값이라 각 .vcxproj 의
-           Label="Configuration" 그룹에 적는다.
-  -->
-
+  <!-- 경로 -->
   <PropertyGroup Label="ClayPaths">
-    <!-- 이 파일은 <저장소루트>/Build/ 에 있다. 한 단계 위가 저장소 루트다. -->
     <ClayRootDir>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..'))</ClayRootDir>
     <ClaySourceDir>$(ClayRootDir)Source\</ClaySourceDir>
-
-    <!-- Engine 이 바깥에 공개하는 헤더 경로. Editor / Game 이 이 값을 참조한다.
-         Engine 의 Private 경로는 여기 넣지 않는다. 내부 헤더가 밖에서 보이면 안 된다. -->
     <ClayEnginePublicDir>$(ClaySourceDir)Engine\Public</ClayEnginePublicDir>
   </PropertyGroup>
 
+  <!-- 출력 -->
   <PropertyGroup Label="ClayOutput">
-    <!-- Engine.dll, Editor.exe, Game.exe 를 모두 같은 폴더에 떨군다.
-         실행 파일은 자기 옆 폴더에서 DLL을 먼저 찾으므로 복사 단계가 필요 없다. -->
     <OutDir>$(ClayRootDir)Binaries\$(Platform)\$(Configuration)\</OutDir>
-
-    <!-- .obj 같은 중간 파일. 프로젝트별로 갈라 둬야 파일 이름이 겹치지 않는다. -->
     <IntDir>$(ClayRootDir)Intermediate\Build\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-
-    <!-- import 라이브러리(.lib)는 배포물이 아니라 빌드 부산물이므로 Intermediate 에 둔다.
-         Binaries 에 두면 배포할 때 걸러내야 한다. -->
     <ClayLibDir>$(ClayRootDir)Intermediate\Lib\$(Platform)\$(Configuration)\</ClayLibDir>
   </PropertyGroup>
 
@@ -40,46 +23,35 @@
     <LinkIncremental Condition="'$(Configuration)' == 'Release'">false</LinkIncremental>
   </PropertyGroup>
 
-  <!-- ===================== 모든 구성 공통 ===================== -->
+  <!-- 공통 -->
   <ItemDefinitionGroup>
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-
-      <!-- /utf-8 : 소스와 실행 파일 문자셋을 모두 UTF-8로 본다. 한글 주석·문자열이 깨지지 않는다. -->
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-
-      <!-- /MP : 파일 단위 병렬 컴파일. 코어 수만큼 동시에 돈다. -->
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-
       <ExceptionHandling>Sync</ExceptionHandling>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-
     <Link>
-      <!-- Release 에서도 pdb 를 남긴다. 출시 빌드에서 터졌을 때 콜스택을 읽으려면 필요하다. -->
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
 
-  <!-- ===================== Debug ===================== -->
+  <!-- Debug -->
   <ItemDefinitionGroup Condition="'$(Configuration)' == 'Debug'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-
-      <!-- DLL 경계를 넘는 코드는 CRT 를 반드시 공유해야 한다.
-           /MDd 는 CRT 를 DLL 로 쓰므로 Engine.dll 과 exe 가 같은 힙을 본다.
-           /MTd 였다면 각자 CRT 사본을 가져, Engine 에서 new 한 메모리를 exe 에서 delete 할 때 터진다.
-           _DEBUG 매크로는 /MDd 가 자동으로 정의하므로 따로 적지 않는다. -->
+      <!-- DLL 경계를 넘으므로 CRT 는 반드시 DLL 버전 -->
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
 
-  <!-- ===================== Release ===================== -->
+  <!-- Release -->
   <ItemDefinitionGroup Condition="'$(Configuration)' == 'Release'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>

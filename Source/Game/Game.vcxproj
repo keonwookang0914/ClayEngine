@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <!-- Game 모듈 : Game.exe - 에디터 없이 게임만 실행하는 실행 파일 -->
-
+  <!-- Game 모듈 : Game.exe -->
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -13,16 +11,13 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <ProjectGuid>{51EC2912-18F6-4F9C-96A4-85594E05BE02}</ProjectGuid>
     <RootNamespace>Game</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
@@ -30,41 +25,36 @@
     <UseDebugLibraries Condition="'$(Configuration)' == 'Debug'">true</UseDebugLibraries>
     <UseDebugLibraries Condition="'$(Configuration)' == 'Release'">false</UseDebugLibraries>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(MSBuildThisFileDirectory)..\..\Build\ClayEngine.Common.props" />
   </ImportGroup>
-
   <PropertyGroup>
     <TargetName>Game</TargetName>
   </PropertyGroup>
-
+  <!-- 디버거 작업 폴더 = 저장소 루트 -->
   <PropertyGroup>
     <LocalDebuggerWorkingDirectory>$(ClayRootDir)</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
-
   <ItemDefinitionGroup>
     <ClCompile>
+      <!-- Include 경로. Engine 은 Public 만 -->
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)Private;$(ClayEnginePublicDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
-
   <ItemGroup>
     <ClCompile Include="Private\GameMain.cpp" />
   </ItemGroup>
-
+  <!-- Engine 참조. 빌드 순서 + Engine.lib 링크 -->
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">
       <Project>{acc0427c-ba91-4490-b362-c9e816245c38}</Project>
     </ProjectReference>
   </ItemGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
