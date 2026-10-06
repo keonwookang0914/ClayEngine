@@ -10,8 +10,8 @@
 #include <Windows.h>
 #include <wrl/client.h>
 
-// D3D11
-#include <d3d11.h>
+// D3D12
+#include <d3d12.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
